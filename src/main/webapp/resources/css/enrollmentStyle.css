@@ -1,0 +1,504 @@
+/* Enhanced Enrollment Page Specific Styles */
+
+/* Page Header */
+.page-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.page-subtitle {
+    font-size: 16px;
+    opacity: 0.9;
+    margin: 0;
+    font-weight: 300;
+}
+
+/* Action Buttons Section */
+.action-buttons-section {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+.action-btn-primary {
+    background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%) !important;
+    border: none !important;
+    border-radius: 10px !important;
+    padding: 15px 25px !important;
+    font-weight: 600 !important;
+    font-size: 16px !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 6px 20px rgba(86, 171, 47, 0.3) !important;
+}
+
+.action-btn-primary:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 8px 25px rgba(86, 171, 47, 0.4) !important;
+}
+
+.action-btn-secondary {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 12px 20px !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+}
+
+.action-btn-secondary:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3) !important;
+}
+
+/* Statistics Cards */
+.stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.3s ease;
+    border-left: 4px solid;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.stat-card-primary {
+    border-left-color: #667eea;
+}
+
+.stat-card-success {
+    border-left-color: #56ab2f;
+}
+
+.stat-card-warning {
+    border-left-color: #f39c12;
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+}
+
+.stat-card-primary .stat-icon {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.stat-card-success .stat-icon {
+    background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+}
+
+.stat-card-warning .stat-icon {
+    background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
+}
+
+.stat-content h3 {
+    font-size: 16px;
+    color: #6c757d;
+    margin: 0 0 8px 0;
+    font-weight: 500;
+}
+
+.stat-number {
+    font-size: 32px;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+/* Enhanced Table Container */
+.table-container {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhanced Enrollment Table */
+.enrollment-table {
+    width: 100% !important;
+    background-color: white !important;
+    border: none !important;
+}
+
+.enrollment-table th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+    font-weight: 600 !important;
+    padding: 18px 15px !important;
+    text-align: center !important;
+    border: none !important;
+    font-size: 14px !important;
+    letter-spacing: 0.5px !important;
+    text-transform: uppercase !important;
+}
+
+.enrollment-table td {
+    padding: 15px 12px !important;
+    border: none !important;
+    border-bottom: 1px solid #f0f0f0 !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    transition: all 0.3s ease !important;
+    background-color: white !important;
+}
+
+.enrollment-table tr:nth-child(even) td {
+    background-color: #fafbff !important;
+}
+
+.enrollment-table tr:hover td {
+    background: linear-gradient(135deg, #f8f9ff 0%, #e8ecff 100%) !important;
+    transform: scale(1.01) !important;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1) !important;
+}
+
+/* Cell Content Styling */
+.cell-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ID Badges */
+.id-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.student-id-badge {
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+    color: #721c24;
+}
+
+.course-id-badge {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    color: #0c5460;
+}
+
+/* Semester Badge */
+.semester-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Status Badges */
+.status-badge {
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-width: 80px;
+    display: inline-block;
+}
+
+.status-enrolled {
+    background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+    color: #1e3a1e;
+}
+
+.status-completed {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.status-dropped {
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+    color: #721c24;
+}
+
+.status-pending {
+    background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+    color: #8b4513;
+}
+
+/* Grade Badges */
+.grade-badge {
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-weight: 700;
+    font-size: 14px;
+    min-width: 40px;
+    display: inline-block;
+}
+
+.grade-a {
+    background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+    color: white;
+}
+
+.grade-b {
+    background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+    color: white;
+}
+
+.grade-c {
+    background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+    color: white;
+}
+
+.grade-d {
+    background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+    color: white;
+}
+
+.grade-f {
+    background: linear-gradient(135deg, #ff7675 0%, #d63031 100%);
+    color: white;
+}
+
+.grade-none {
+    background: linear-gradient(135deg, #ddd 0%, #bbb 100%);
+    color: #666;
+}
+
+/* Active Indicator */
+.active-indicator {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.active-true {
+    color: #00b894;
+}
+
+.active-false {
+    color: #ff7675;
+}
+
+/* Course and Student Names */
+.course-name,
+.student-name {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 14px;
+}
+
+.enrollment-date {
+    font-size: 12px;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* Action Buttons in Table */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.action-btn-edit {
+    background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 8px 10px !important;
+    transition: all 0.3s ease !important;
+}
+
+.action-btn-edit:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(253, 203, 110, 0.4) !important;
+}
+
+.action-btn-delete {
+    background: linear-gradient(135deg, #ff7675 0%, #d63031 100%) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 8px 10px !important;
+    transition: all 0.3s ease !important;
+}
+
+.action-btn-delete:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(255, 118, 117, 0.4) !important;
+}
+
+/* Enhanced Dialog Styling */
+.enrollment-dialog.modern-dialog {
+    border-radius: 20px !important;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3) !important;
+    border: none !important;
+    overflow: hidden !important;
+}
+
+.enrollment-dialog .ui-dialog-titlebar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+    padding: 25px 30px !important;
+    border: none !important;
+    font-weight: 700 !important;
+    font-size: 20px !important;
+}
+
+.dialog-content {
+    background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%) !important;
+    padding: 30px !important;
+    min-height: 400px;
+}
+
+/* Form Sections */
+.form-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.form-section {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border-left: 4px solid #667eea;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-title i {
+    color: #667eea;
+    font-size: 20px;
+}
+
+/* Enhanced Form Grid */
+.enrollment-form-grid {
+    width: 100% !important;
+    border: none !important;
+    background: transparent !important;
+}
+
+.enrollment-form-grid td {
+    padding: 12px 8px !important;
+    border: none !important;
+    vertical-align: middle !important;
+}
+
+/* Enhanced Form Inputs */
+.form-input,
+.form-select,
+.form-calendar {
+    width: 100% !important;
+    border: 2px solid #e8ecf4 !important;
+    border-radius: 10px !important;
+    padding: 12px 16px !important;
+    font-size: 14px !important;
+    transition: all 0.3s ease !important;
+    background-color: white !important;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-calendar:focus {
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Enhanced Labels */
+.form-label {
+    font-weight: 600 !important;
+    color: #2c3e50 !important;
+    font-size: 14px !important;
+}
+
+/* Checkbox Container */
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-checkbox {
+    width: 20px !important;
+    height: 20px !important;
+    border-radius: 4px !important;
+}
+
+.checkbox-label {
+    font-weight: 500;
+    color: #2c3e50;
+    cursor: pointer;
+}
+
+/* Dialog Actions */
+.dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 25px;
+    border-top: 2px solid #f0f0f0;
+}
+
+.dialog-btn-cancel {
+    background: linear-gradient(135deg, #bdc3c7 0%, #95a5a6 100%) !important;
+    border: none !important;
+    border-radius: 10px !important;
+    padding: 12px 25px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+}
+
+.dialog-btn-cancel:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3) !important;
+}
+
+.dialog-btn-save {
+    background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%) !important;
+    border: none !important;
+    border-radius: 10px !important;
+    padding: 12px 25px !important;
+    font-weight: 600 !important;
+    font-size: 16px !important;
+    transition: all ease;}

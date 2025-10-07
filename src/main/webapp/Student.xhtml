@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>University System -Courses Management</title>
+    <h:outputStylesheet name="studentstyle.css" library="css" />
+</h:head>
+
+
+<h:body>
+
+    <ui:include src="template/Header.xhtml"/>
+
+    <br/>
+
+
+    <p:commandButton
+            value="Add Student"
+            actionListener="#{studentBean.resetForm()}"
+            update=":studentForm"
+            oncomplete="PF('studentDialog').show();"
+            styleClass="ui-button-success"
+    />
+    <br/>
+
+    <h:form id="sortForm"
+            style="text-align: right">
+        <p:selectOneMenu value="#{studentBean.sortField}"
+                         style="margin-right: 5px;">
+            <f:selectItem itemLabel="Select Field" itemValue="" />
+            <f:selectItem itemLabel="Student Name" itemValue="student.name" />
+            <f:selectItem itemLabel="Student ID" itemValue="student.id" />
+
+        </p:selectOneMenu>
+
+        <p:selectOneMenu value="#{studentBean.sortOrder}"
+                         style="margin-right: 5px;">
+            <f:selectItem itemLabel="Ascending" itemValue="asc" />
+            <f:selectItem itemLabel="Descending" itemValue="desc" />
+        </p:selectOneMenu>
+
+        <p:commandButton value="Sort" actionListener="#{studentBean.sortStudents()}"
+                         update=":mainForm:studentTable"
+                         style="margin-right: 5px;"/>
+    </h:form>
+    <br/>
+
+    <h:form id="mainForm">
+        <p:dataTable id="studentTable" value="#{studentBean.getStudents()}"
+                     var="student" rows="5" responsiveLayout="scroll"
+                     styleClass="courses-table custom-datatable" rowHover="true"
+                     paginator="true"
+                     paginatorPosition="bottom"
+                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                     rowsPerPageTemplate="5,10,15,20,50"
+                     currentPageReportTemplate="Showing {startRecord} - {endRecord} of {totalRecords} entries"
+        >
+
+            <p:column headerText="ID">#{student.id}</p:column>
+            <p:column headerText="Name">#{student.name}</p:column>
+            <p:column headerText="Email">#{student.email}</p:column>
+            <p:column headerText="Gender">#{student.gender}</p:column>
+            <p:column headerText="GPA">#{student.gpa}</p:column>
+            <p:column headerText="Nationality">#{student.nationality.name}</p:column>
+            <p:column headerText="Major">#{student.major.name}</p:column>
+            <p:column headerText="Faculty">#{student.faculty.name}</p:column>
+
+            <p:column headerText="Actions">
+                <p:commandButton icon="pi pi-trash" title="Delete"
+                                 actionListener="#{studentBean.deleteStudent(student)}"
+                                 update=":mainForm:studentTable"
+                                 onclick="return confirm('Are you sure you want to delete this student?');"
+                                 styleClass="ui-button-danger"
+                                 padding="5"
+                />
+
+                <p:commandButton icon="pi pi-pencil" title="edit"
+                                 actionListener="#{studentBean.setSelectedStudent(student)}"
+                                 update=":studentForm"
+                                 oncomplete="PF('studentDialog').show();"
+                                 styleClass="ui-button-warning"
+                                 padding="5"
+
+                />
+            </p:column>
+
+        </p:dataTable>
+    </h:form>
+
+
+    <p:dialog header="Add/Edit student" widgetVar="studentDialog"
+                      modal="true" width="400" resizable="false">
+
+        <div style="max-height:600px; overflow-y:auto; padding-right:10px;">>
+
+                <h:form id="studentForm">
+                    <p:panelGrid columns="2" cellPadding="5">
+                        <p:outputLabel for="name" value="Student Name"/>
+                        <p:inputText id="name" value="#{studentBean.selectedStudent.name}" required="true"/>
+
+                        <p:outputLabel for="email" value="Email"/>
+                        <p:inputText id="email" value="#{studentBean.selectedStudent.email}" required="true"/>
+
+
+                        <p:outputLabel for="mobileNo" value="Mobile Number"/>
+                        <p:inputText id="mobileNo" value="#{studentBean.selectedStudent.mobileNo}" required="true"/>
+
+
+                        <p:outputLabel for="nationalId" value="National ID"/>
+                        <p:inputText id="nationalId" value="#{studentBean.selectedStudent.nationalId}" required="true"/>
+
+                        <h:outputLabel for="faculty" value="Faculty:" />
+                        <p:selectOneMenu id="faculty" value="#{studentBean.facultyId}" required="true">
+                            <f:selectItem itemLabel="Select Faculty" itemValue="" />
+                            <f:selectItems value="#{studentBean.faculties}" var="faculty" itemLabel="#{faculty.name}" itemValue="#{faculty.id}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel for="gender" value="Gender:" />
+                        <p:selectOneMenu id="gender" value="#{studentBean.selectedStudent.gender}" required="true">
+                            <f:selectItem itemLabel="Select Gender" itemValue="" />
+                            <f:selectItem itemLabel="Male" itemValue="Male" />
+                            <f:selectItem itemLabel="Female" itemValue="Female" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel for="major" value="Major:" />
+                        <p:selectOneMenu id="major" value="#{studentBean.majorId}" required="true">
+                            <f:selectItem itemLabel="Select Major" itemValue="" />
+                            <f:selectItems value="#{studentBean.majors}" var="major" itemLabel="#{major.name}" itemValue="#{major.id}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel for="nationality" value="Nationality:" />
+                        <p:selectOneMenu id="nationality" value="#{studentBean.nationalityId}" required="true">
+                            <f:selectItem itemLabel="Select Nationality" itemValue="" />
+                            <f:selectItems value="#{studentBean.nationalities}" var="nationality" itemLabel="#{nationality.name}" itemValue="#{nationality.id}" />
+                        </p:selectOneMenu>
+
+                        <p:outputLabel for="dob" value="Date of Birth" />
+                        <p:calendar id="dob"
+                                      value="#{studentBean.selectedStudent.birthDate}"
+                                      pattern="dd/MM/yyyy"
+                                      showIcon="true"
+                                      required="true"
+                                      placeholder="Select date"
+                                    showButtonPanel="true" navigator="true"
+                                    yearRange="1900:#{currentYear}"/>
+
+                    </p:panelGrid>
+                    <div>
+                        <p:commandButton value="Save"
+
+                                         action="#{studentBean.saveStudent}"
+                                         update=":mainForm:studentTable"
+                                         oncomplete="PF('studentDialog').hide();"
+                                         style="margin-top:10px;" />
+
+
+                    </div>
+                </h:form>
+        </div>
+
+            </p:dialog>
+
+    <br/>
+    <br/>
+    <br/>
+
+    <ui:include src="template/Footer.xhtml"/>
+
+
+
+
+
+
+
+</h:body>
+</html>

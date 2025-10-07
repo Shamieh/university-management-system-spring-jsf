@@ -1,0 +1,128 @@
+/* General Body */
+body {
+    font-family: Arial, sans-serif;
+    background-color: rgb(255, 255, 255);
+    margin: 20px;
+}
+
+/* Menubar Styling */
+.custom-menubar {
+    background-color: #ffffff !important;
+    color: #b1a8a8 !important;
+    font-weight: bold;
+}
+
+.custom-menubar .ui-menuitem-link {
+    color: white !important;
+}
+
+.custom-menubar .ui-menuitem-link:hover {
+    background-color: #5a6fd0 !important;
+}
+
+/* PrimeFaces DataTable */
+.custom-datatable {
+    width: 100% !important;
+    background-color: white !important;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    font-size: 14px;
+}
+
+/* Table Header */
+.custom-datatable th {
+    background-color: #6e83ff !important;
+    color: white !important;
+    font-weight: bold;
+    padding: 8px 10px !important;
+}
+
+/* Table Cells */
+.custom-datatable td {
+    padding: 8px 10px !important;
+    border: 1px solid #ddd !important;
+    text-align: left !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Even Rows */
+.custom-datatable tr:nth-child(even) {
+    background-color: #f2f2f2 !important;
+}
+
+/* Hover Effect */
+.custom-datatable tr:hover {
+    background-color: #d1ecf1 !important;
+    cursor: pointer;
+}
+
+/* Student Dialog */
+.student-dialog {
+    width: 500px;                /* comfortable width */
+    max-height: 80vh;            /* max height = 80% of viewport */
+    padding: 15px;
+    overflow: hidden;            /* scroll handled inside content */
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    background-color: #fff;
+}
+
+/* Scrollable content inside dialog */
+.scrollable-dialog-content {
+    max-height: 60vh;            /* scrollable part only */
+    overflow-y: auto;
+    padding-right: 5px;          /* avoid scrollbar overlap */
+}
+
+/* PanelGrid inside dialog */
+.student-dialog .ui-panelgrid {
+    width: 100%;
+    table-layout: fixed;         /* prevent horizontal overflow */
+}
+
+/* Buttons wrapper inside dialog */
+.student-dialog .dialog-buttons {
+    margin-top: 15px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+/* Scrollable container inside dialog */
+.scrollable-dialog-content {
+    max-height: 500px; /* adjust for viewport */
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+
+/* Footer Styles */
+.footer {
+    background-color: #2c3e50;   /* Dark navy */
+    color: #ecf0f1;             /* Light text */
+    text-align: center;
+    /*padding: 20px 10px;*/
+    font-size: 14px;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    border-radius: 10px;
+}
+
+.footer a {
+    color: #1abc9c;   /* Teal links */
+    text-decoration: none;
+    margin: 0 8px;
+    transition: color 0.3s ease;
+}
+
+.footer a:hover {
+    color: #16a085;
+}
+
+.footer small {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    opacity: 0.8;
+}
