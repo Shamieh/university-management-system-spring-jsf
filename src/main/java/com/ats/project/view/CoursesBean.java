@@ -1,9 +1,7 @@
-package com.ats.project.View;
+package com.ats.project.view;
 
-import com.ats.project.model.Courses;
-import com.ats.project.model.Enrollment;
+import com.ats.project.model.Course;
 import com.ats.project.model.Faculty;
-import com.ats.project.model.Students;
 import com.ats.project.service.CoursesService;
 import com.ats.project.service.FacultyService;
 import jakarta.annotation.PostConstruct;
@@ -25,10 +23,10 @@ public class CoursesBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Courses selectedCourse;
+    private Course selectedCourse;
     private Long selectedFacultyId;
 
-    private List<Courses> coursesList;
+    private List<Course> coursesList;
     private List<Faculty> facultyList;
 
     @Autowired
@@ -39,7 +37,7 @@ public class CoursesBean implements Serializable {
 
     @PostConstruct
     public void init() {
-        selectedCourse = new Courses();
+        selectedCourse = new Course();
         refreshCourses();
         refreshFaculties();
     }
@@ -90,7 +88,7 @@ public class CoursesBean implements Serializable {
     // =========================
     // Delete Course
     // =========================
-    public void deleteCourse(Courses course) {
+    public void deleteCourse(Course course) {
         try {
             if (course != null && course.getId() != null) {
                 courseService.deleteById(course.getId());
@@ -125,12 +123,12 @@ public class CoursesBean implements Serializable {
     // Reset form
     // =========================
     public void resetForm() {
-        selectedCourse = new Courses();
+        selectedCourse = new Course();
         selectedFacultyId = null;
     }
 
 
-    public void setSelectedCourse(Courses course) {
+    public void setSelectedCourse(Course course) {
         this.selectedCourse = course;
         if (course != null && course.getFaculty() != null) {
             this.selectedFacultyId = course.getFaculty().getId();
@@ -148,18 +146,18 @@ public class CoursesBean implements Serializable {
             return;
         }
 
-        Comparator<Courses> comparator = null;
+        Comparator<Course> comparator = null;
 
         switch (sortField.toLowerCase()) {
 
 
             case "course.name":
-                comparator = Comparator.comparing(Courses::getName);
+                comparator = Comparator.comparing(Course::getName);
                 break;
 
 
             case "course.id":
-                comparator = Comparator.comparing(Courses::getId);
+                comparator = Comparator.comparing(Course::getId);
                 break;
         }
 

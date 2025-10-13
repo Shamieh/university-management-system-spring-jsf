@@ -1,4 +1,4 @@
-package com.ats.project.View;
+package com.ats.project.view;
 
 import com.ats.project.exceptions.EnrollmentAlreadyExistsException;
 import com.ats.project.exceptions.EnrollmentValidationException;
@@ -9,6 +9,7 @@ import com.ats.project.service.EnrollmentService;
 import com.ats.project.service.StudentsService;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.model.SelectItem;
 import jakarta.faces.view.ViewScoped;
@@ -16,14 +17,17 @@ import jakarta.inject.Named;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Named("enrollmentBean")
@@ -267,5 +271,88 @@ public class EnrollmentBean implements Serializable {
 
     }
 
+    // EDITED: Fixed Excel export method
+    public void exportToExcel() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ExternalContext externalContext = facesContext.getExternalContext();
+        System.out.println("=== EXPORT BUTTON CLICKED ===");
+        System.out.println("Enrollment list size: " + (enrollments != null ? enrollments.size() : "NULL"));
+        try {
+            // Create workbook and sheet
+            Workbook workbook = new XSSFWorkbook();
+            Sheet sheet = workbook.createSheet("Enrollments");
+
+            // Create header row style
+            CellStyle headerStyle = workbook.createCellStyle();
+            Font headerFont = workbook.createFont();
+            headerFont.setBold(true);
+            headerStyle.setFont(headerFont);
+            headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+            // Create header row
+            Row headerRow = sheet.createRow(0);
+            String[] columns = {"Student ID", "Student Name", "Course ID", "Course Name",
+                    "Semester", "Status", "Grade", "Enrollment Date"};
+
+            for (int i = 0; i < columns.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(columns[i]);
+                cell.setCellStyle(headerStyle);
+            }
+
+            // Fill data rows
+            int rowNum = 1;
+            for (Enrollment enrollment : enrollments) {
+                Row row = sheet.createRow(rowNum++);
+
+                row.createCell(0).setCellValue(enrollment.getStudent().getId());
+                row.createCell(1).setCellValue(enrollment.getStudent().getName());
+                row.createCell(2).setCellValue(enrollment.getCourse().getId());
+                row.createCell(3).setCellValue(enrollment.getCourse().getName());
+                row.createCell(4).setCellValue(enrollment.getId().getSemester().name());
+                row.createCell(5).setCellValue(enrollment.getStatus().name());
+                row.createCell(6).setCellValue(enrollment.getGrade() != null ?
+                        enrollment.getGrade().name() : "N/A");
+                row.createCell(7).setCellValue(enrollment.getEnrollmentDate().toString());
+            }
+
+            // Auto-size columns
+            for (int i = 0; i < columns.length; i++) {
+                sheet.autoSizeColumn(i);
+            }
+
+            // Prepare response
+            externalContext.responseReset();
+            externalContext.setResponseContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            externalContext.setResponseHeader("Content-Disposition",
+                    "attachment; filename=\"enrollments_" + LocalDate.now() + ".xlsx\"");
+
+            // Write to output stream
+            OutputStream output = externalContext.getResponseOutputStream();
+            workbook.write(output);
+            output.flush();
+            workbook.close();
+
+            // Mark response as complete
+            facesContext.responseComplete();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            facesContext.addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Error", "Failed to export Excel: " + e.getMessage()));
+        }
+    }
+
+    // EDITED: Add this test method temporarily
+    public void testExport() {
+        System.out.println("=== EXPORT BUTTON CLICKED ===");
+        System.out.println("Enrollment list size: " + (enrollments != null ? enrollments.size() : "NULL"));
+
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO,
+                        "Test", "Export button was clicked!"));
+    }
 
 }

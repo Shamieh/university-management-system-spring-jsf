@@ -13,7 +13,7 @@ import java.util.*;
 @ToString
 @Entity
 @Table(name = "student")
-public class Students {
+public class Student {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,10 +52,12 @@ public class Students {
             joinColumns = @JoinColumn(name = "student_id"),
             inverseJoinColumns = @JoinColumn(name = "course_id")
     )
-    private Set<Courses> completedCourses = new HashSet<>();
+    private Set<Course> completedCourses = new HashSet<>();
 
     private double gpa;
 
+    @OneToOne(mappedBy = "student")
+    private User user;
 
 
 }

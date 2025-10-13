@@ -107,7 +107,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
         if (enrollment.getCourse().getPrerequisiteCourses() != null && !enrollment.getCourse().getPrerequisiteCourses().isEmpty()){
 
-        for (Courses course : enrollment.getCourse().getPrerequisiteCourses()) {
+        for (Course course : enrollment.getCourse().getPrerequisiteCourses()) {
             if(enrollment.getStudent().getCompletedCourses() != null
                     && !enrollment.getStudent().getCompletedCourses().isEmpty()){
 
@@ -152,4 +152,28 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         enrollmentRepo.deleteById(id);
     }
 
+
+    public List<Enrollment> getEnrollmentsByStudentAndStatus(Long studentId, EnrollmentStatus status) {
+        return enrollmentRepo.findEnrollmentsByStudentIdAndStatus(studentId, status);
+    }
+
+    @Override
+    @Transactional
+    public void dropEnrollment(EnrollmentId id) {
+        Enrollment enrollment = enrollmentRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Enrollment not found"));
+
+        if (enrollment.getStatus() != EnrollmentStatus.ENROLLED) {
+            throw new IllegalArgumentException("Can only drop active enrollments");
+        }
+
+        enrollment.setStatus(EnrollmentStatus.DROPPED);
+        enrollmentRepo.save(enrollment);
+
+        Course course = enrollment.getCourse();
+        if (course.getCurrentEnrollment() > 0) {
+            course.setCurrentEnrollment(course.getCurrentEnrollment() - 1);
+            coursesRepository.save(course);
+        }
+    }
 }

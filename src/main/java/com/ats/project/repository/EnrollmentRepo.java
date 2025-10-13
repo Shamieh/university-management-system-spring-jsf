@@ -2,6 +2,7 @@ package com.ats.project.repository;
 
 import com.ats.project.model.Enrollment;
 import com.ats.project.model.EnrollmentId;
+import com.ats.project.model.EnrollmentStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,5 +26,5 @@ public interface EnrollmentRepo extends JpaRepository <Enrollment, EnrollmentId>
     List<Enrollment> findCompletedByStudentId(@Param("studentId") Long studentId);
 
 
-
+    List<Enrollment> findEnrollmentsByStudentIdAndStatus(Long studentId, EnrollmentStatus status);
 }

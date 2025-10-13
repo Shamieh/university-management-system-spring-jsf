@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Student Dashboard</title>
+    <h:outputStylesheet name="studentstyle.css" library="css" />
+</h:head>
+
+<h:body>
+
+    <br/>
+
+    <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true"/>
+
+
+    <p:menubar style="background: transparent; border: none; box-shadow: none; display: flex; justify-content: flex-end; padding: 0.5rem 1rem;">
+        <p:menuitem value="Logout"
+                    url="/logout"
+                  style="background-color: #dd5959; color: white; border-radius: 8px;"/>
+
+    </p:menubar>
+
+
+    <h2>Welcome, #{studentDashboardBean.student.name}</h2>
+
+
+
+
+    <h:form id="dashboardForm">
+
+        <p:tabView>
+            <p:tab title="Active Enrollments">
+                <p:dataTable var="e" value="#{studentDashboardBean.activeEnrollments}"
+                             paginator="true"
+                             styleClass="custom-datatable"
+                             rowHover="true"
+                             rows="5"
+                             responsiveLayout="scroll"
+                             paginatorPosition="bottom"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,15,20,50"
+                             currentPageReportTemplate="Showing {startRecord} - {endRecord} of {totalRecords} entries">
+                    <p:column headerText="Course">
+                        <h:outputText value="#{e.course.name}"/>
+                    </p:column>
+                    <p:column headerText="Credits">
+                        <h:outputText value="#{e.course.creditHours}"/>
+                    </p:column>
+                    <p:column headerText="Semester">
+                        <h:outputText value="#{e.id.semester}"/>
+                    </p:column>
+                    <p:column headerText="Action">
+                        <p:commandButton value="Drop"
+                                         action="#{studentDashboardBean.dropEnrollment(e)}"
+                                         update="@form"
+                                         styleClass="ui-button-danger"/>
+                    </p:column>
+                </p:dataTable>
+
+                <br/>
+
+
+            </p:tab>
+
+            <p:tab title="Completed">
+                <p:dataTable value="#{studentDashboardBean.completedEnrollments}"
+                             var="e"
+                             styleClass="custom-datatable"
+                             rowHover="true"
+                             responsiveLayout="scroll">
+                    <p:column headerText="Course">
+                        <h:outputText value="#{e.course.name}"/>
+                    </p:column>
+                    <p:column headerText="Grade">
+                        <h:outputText value="#{e.grade}"/>
+                    </p:column>
+                </p:dataTable>
+            </p:tab>
+
+            <p:tab title="Dropped">
+                <p:dataTable var="e"
+                             value="#{studentDashboardBean.droppedEnrollments}"
+                             styleClass="custom-datatable"
+                             rowHover="true"
+                             responsiveLayout="scroll">
+                    <p:column headerText="Course">
+                        <h:outputText value="#{e.course.name}"/>
+                    </p:column>
+                </p:dataTable>
+            </p:tab>
+
+            <p:tab title="Failed">
+                <p:dataTable var="e"
+                             value="#{studentDashboardBean.failedEnrollments}"
+                             styleClass="custom-datatable"
+                             rowHover="true"
+                             responsiveLayout="scroll">
+                    <p:column headerText="Course">
+                        <h:outputText value="#{e.course.name}"/>
+                    </p:column>
+                </p:dataTable>
+            </p:tab>
+        </p:tabView>
+
+    </h:form>
+
+    <p:separator />
+    <!-- after </p:separator> -->
+    <h:panelGroup layout="block" style="display: flex; justify-content: space-between; gap: 3rem; flex-wrap: wrap;">
+
+        <!-- Enrollment Form -->
+        <h:form id="enrollmentForm" style="flex: 1;">
+            <h:panelGrid columns="2" columnClasses="label,value" style="width: 100%;">
+                <h:outputLabel value="Select Course:" for="courseSelect"/>
+                <p:selectOneMenu id="courseSelect" value="#{studentDashboardBean.selectedCourseId}">
+                    <f:selectItem itemLabel="-- Choose Course --" itemValue="#{null}" />
+                    <f:selectItems value="#{coursesBean.coursesList}" var="c"
+                                   itemLabel="#{c.name} (#{c.creditHours} CH)" itemValue="#{c.id}"/>
+                </p:selectOneMenu>
+
+                <h:outputLabel for="semesterSelect" value="Select Semester:" />
+                <p:selectOneMenu id="semesterSelect" value="#{studentDashboardBean.selectedSemester}">
+                    <f:selectItem itemLabel="-- Choose Semester --" itemValue="#{null}" />
+                    <f:selectItems value="#{studentDashboardBean.semesters}" var="sem"
+                                   itemLabel="#{sem.name()}" itemValue="#{sem}" />
+                </p:selectOneMenu>
+
+                <p:commandButton value="Enroll"
+                                 action="#{studentDashboardBean.addEnrollment}"
+                                 update=":dashboardForm :enrollmentForm :statsPanel :messages"
+                                 styleClass="ui-button-success"
+                                 ajax="true"/>
+            </h:panelGrid>
+        </h:form>
+
+        <!-- Student Stats -->
+        <p:panel id="statsPanel" header="Student Card" style="flex: 0.4; min-width: 300px; text-align:center;">
+            <p:panelGrid columns="3" style="width:100%; text-align:center;">
+                <p:row>
+                    <p:column>
+                        <h3>GPA</h3>
+                        <h:outputText value="#{studentDashboardBean.gpa}" />
+                    </p:column>
+
+                    <p:column>
+                        <h3>Current Credits</h3>
+                        <h:outputText value="#{studentDashboardBean.currentCreditHours}" />
+                    </p:column>
+
+                    <p:column>
+                        <h3>Completed Credits</h3>
+                        <h:outputText value="#{studentDashboardBean.completedCreditHours}" />
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+        </p:panel>
+
+    </h:panelGroup>
+
+    <br/>
+    <br/>
+    <br/>
+
+    <ui:include src="/template/footer.xhtml"/>
+
+</h:body>
+</html>

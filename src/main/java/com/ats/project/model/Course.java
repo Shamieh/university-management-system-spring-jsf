@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,7 +17,7 @@ import java.util.Set;
 @Entity
 @Table(name="Courses")
 @NoArgsConstructor
-public class Courses {
+public class Course {
 
     @Getter
     @Id
@@ -49,15 +47,15 @@ public class Courses {
             joinColumns = @JoinColumn(name = "course_id"),
             inverseJoinColumns = @JoinColumn(name = "prerequisite_id")
     )
-    private List<Courses> prerequisiteCourses = new ArrayList<>();
+    private List<Course> prerequisiteCourses = new ArrayList<>();
 
 
 
     @ManyToMany(mappedBy = "completedCourses")
-    private Set<Students> studentsWhoCompleted = new HashSet<>();
+    private Set<Student> studentsWhoCompleted = new HashSet<>();
 
 
-    public Courses(String name, Integer creditHours, Boolean isActive, String description, Faculty faculty, int maxCapacity, int currentEnrollment) {
+    public Course(String name, Integer creditHours, Boolean isActive, String description, Faculty faculty, int maxCapacity, int currentEnrollment) {
         this.name = name;
         this.creditHours = creditHours;
         this.isActive = isActive;

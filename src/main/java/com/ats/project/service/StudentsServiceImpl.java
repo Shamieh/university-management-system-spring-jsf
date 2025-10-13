@@ -27,7 +27,7 @@ public class StudentsServiceImpl implements StudentsService {
 
     @Override
     @Transactional
-    public Students createStudent(Students student) {
+    public Student createStudent(Student student) {
         if (student.getEmail() == null) {
             throw new IllegalArgumentException("Email is required for student registration");
         }
@@ -40,20 +40,20 @@ public class StudentsServiceImpl implements StudentsService {
     }
 
 
-    public Optional<Students> findById(Long id) {
+    public Optional<Student> findById(Long id) {
         return studentsRepository.findById(id);
     }
 
 
     @Override
-    public List<Students> findAll() {
+    public List<Student> findAll() {
         return studentsRepository.findAll();
     }
 
 
     @Override
     @Transactional
-    public Students updateStudent(Students updatedData) throws Exception {
+    public Student updateStudent(Student updatedData) throws Exception {
         return studentsRepository.findById(updatedData.getId()).map(existing -> {
             existing.setName(updatedData.getName());
             existing.setBirthDate(updatedData.getBirthDate());
@@ -73,8 +73,8 @@ public class StudentsServiceImpl implements StudentsService {
 
     }
 
-    public Students deleteStudent(Long id) throws Exception {
-        Optional<Students> studentOpt = studentsRepository.findById(id);
+    public Student deleteStudent(Long id) throws Exception {
+        Optional<Student> studentOpt = studentsRepository.findById(id);
         if (studentOpt.isPresent()) {
             studentsRepository.deleteById(id);
             System.out.println("Student with ID " + id + " deleted.");
@@ -88,11 +88,11 @@ public class StudentsServiceImpl implements StudentsService {
 
     @Override
     @Transactional
-    public Double calculateGpa(Students student) {
+    public Double calculateGpa(Student student) {
         int creditHours=0;
         double gpa = 0;
 
-        for(Courses course: student.getCompletedCourses()){
+        for(Course course: student.getCompletedCourses()){
 
 //            List <Enrollment> allCourseEnrollments = enrollmentService.findByStudentAmdCourseId(student.getId(), course.getId());
             List <Enrollment> allCourseEnrollments = enrollmentRepo.findByCourseIdAndStudentId(course.getId(), student.getId());
@@ -122,7 +122,7 @@ public class StudentsServiceImpl implements StudentsService {
     }
 
     @Override
-    public void addCompletedCourses(Students student) {
+    public void addCompletedCourses(Student student) {
         List <Enrollment> studentEnrollments = enrollmentRepo.findAll();
 
         studentEnrollments.stream()

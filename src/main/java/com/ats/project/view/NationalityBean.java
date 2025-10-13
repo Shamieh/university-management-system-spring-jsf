@@ -1,4 +1,4 @@
-package com.ats.project.View;
+package com.ats.project.view;
 
 
 import com.ats.project.model.Nationality;

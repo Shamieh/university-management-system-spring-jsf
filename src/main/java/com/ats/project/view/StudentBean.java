@@ -1,9 +1,9 @@
-package com.ats.project.View;
+package com.ats.project.view;
 
 import com.ats.project.model.Faculty;
 import com.ats.project.model.Major;
 import com.ats.project.model.Nationality;
-import com.ats.project.model.Students;
+import com.ats.project.model.Student;
 import com.ats.project.service.FacultyService;
 import com.ats.project.service.MajorService;
 import com.ats.project.service.NationalityService;
@@ -38,18 +38,18 @@ public class StudentBean implements Serializable {
     @Autowired
     private FacultyService facultyService;
 
-    Students  student;
+    Student student;
     private Long facultyId;
     private Long majorId;
     private Long nationalityId;
 
 
-    private List<Students> students;
+    private List<Student> students;
     private List<Faculty> faculties ;
     private List<Major> majors;
     private List<Nationality> nationalities;
 
-    private Students selectedStudent;
+    private Student selectedStudent;
 
 
     public StudentBean(StudentsService studentsService) {
@@ -58,7 +58,7 @@ public class StudentBean implements Serializable {
 
     @PostConstruct
     public void init (){
-        student =  new Students();
+        student =  new Student();
         refreshStudents();
         refreshFaculties();
         refreshMajors();
@@ -81,7 +81,7 @@ public class StudentBean implements Serializable {
         nationalities = nationalityService.findAll();
     }
 
-    public void deleteStudent(Students student){
+    public void deleteStudent(Student student){
         try {
             if(student != null){
             studentsService.deleteStudent(student.getId());
@@ -138,7 +138,7 @@ public class StudentBean implements Serializable {
 
 
 
-    public void setSelectedStudent(Students student) {
+    public void setSelectedStudent(Student student) {
         this.selectedStudent = student;
         this.facultyId = student.getFaculty().getId();
         this.majorId = student.getMajor().getId();
@@ -146,7 +146,7 @@ public class StudentBean implements Serializable {
     }
 
     public void resetForm (){
-        selectedStudent = new Students();
+        selectedStudent = new Student();
         facultyId = null;
         majorId = null;
         nationalityId = null;
@@ -171,16 +171,16 @@ public class StudentBean implements Serializable {
             return;
         }
 
-        Comparator<Students> comparator = null;
+        Comparator<Student> comparator = null;
 
         switch (sortField.toLowerCase()) {
             case "student.name":
-                comparator = Comparator.comparing(Students::getName);
+                comparator = Comparator.comparing(Student::getName);
                 break;
 
 
             case "student.id":
-                comparator = Comparator.comparing(Students::getId);
+                comparator = Comparator.comparing(Student::getId);
                 break;
 
         }

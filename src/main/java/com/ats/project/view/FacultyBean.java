@@ -1,7 +1,7 @@
-package com.ats.project.View;
+package com.ats.project.view;
 
-import com.ats.project.model.Major;
-import com.ats.project.service.MajorService;
+import com.ats.project.model.Faculty;
+import com.ats.project.service.FacultyService;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -16,84 +16,85 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-@Named("majorBean")
+@Named("facultyBean")
 @Getter
 @Setter
 @NoArgsConstructor
 
 
-public class MajorBean implements Serializable {
+public class FacultyBean implements Serializable {
 
     @Autowired
-    private MajorService majorService;
+    private FacultyService facultyService;
 
     private String name;
     private Long id;
-    private Major selectedMajor;
+    private Faculty selectedFaculty;
 
-    List<Major> majorList;
+    List<Faculty> facultyList;
 
-    public MajorBean(MajorService majorService) {
-        this.majorService = majorService;
+    public FacultyBean(FacultyService facultyService) {
+        this.facultyService = facultyService;
     }
 
 
     @PostConstruct
     public void init() {
 
-        majorList = new ArrayList<>();
-        refershMajors();
+        facultyList = new ArrayList<>();
+        refreshFaculties();
     }
 
 
     public void resetForm() {
-        selectedMajor = new Major();
+        selectedFaculty = new Faculty();
     }
 
 
 
-    public void deleteMajor(Major major) {
+    public void deleteFaculty(Faculty faculty) {
         try {
-            majorService.deleteMajor(major.getId());
-            refershMajors();
+            facultyService.deleteFaculty(faculty.getId());
+            refreshFaculties();
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_INFO,
-                            "Success", "Major deleted successfully!"));
+                            "Success", "Faculty deleted successfully!"));
         } catch (DataIntegrityViolationException ex) {
             // Spring Data JPA throws this when a foreign key fails
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                            "Cannot delete major: there are students linked to this major."));
+                            "Cannot delete faculty: there are students linked to this faculty."));
         } catch (RuntimeException e) {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR,
                             "Error", e.getMessage()));
-        } catch (Exception ex) {
+        }catch (Exception ex) {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                            "Unexpected error occurred while deleting major."));
+                            "Unexpected error occurred while deleting faculty."));
         }
     }
 
 
-    private void refershMajors() {
-        majorList = majorService.findAll();
+
+    private void refreshFaculties() {
+        facultyList = facultyService.findAll();
     }
 
-    public void saveMajor(){
+    public void saveFaculty(){
         try {
-            if (selectedMajor.getId() == null) {
-                // Adding a new major
-                majorService.saveMajor(selectedMajor);
+            if (selectedFaculty.getId() == null) {
+                // Adding a new faculty
+                facultyService.createFaculty(selectedFaculty);
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_INFO,
-                                "Success", "Major added successfully!"));
+                                "Success", "Faculty added successfully!"));
             } else {
-                // Updating an existing major
-                majorService.updateMajor(selectedMajor);
+                // Updating an existing faculty
+                facultyService.updateFaculty(selectedFaculty);
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_INFO,
-                                "Success", "Major updated successfully!"));
+                                "Success", "Faculty updated successfully!"));
             }
         } catch (RuntimeException e) {
             FacesContext.getCurrentInstance().addMessage(null,
@@ -103,8 +104,9 @@ public class MajorBean implements Serializable {
         }
 
         // Refresh and reset only if operation succeeded
-        refershMajors();
+        refreshFaculties();
         resetForm();
     }
+
 
 }

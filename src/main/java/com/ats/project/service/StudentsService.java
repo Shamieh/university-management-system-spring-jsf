@@ -1,23 +1,24 @@
 package com.ats.project.service;
 
-import com.ats.project.model.Students;
+import com.ats.project.model.Student;
 
 import java.util.List;
 import java.util.Optional;
 
+
 public interface StudentsService {
-    Students createStudent(Students student);
-    Optional<Students> findById(Long id);
+    Student createStudent(Student student);
+    Optional<Student> findById(Long id);
 
-    List<Students> findAll();
+    List<Student> findAll();
 
-    Students updateStudent( Students updatedData) throws Exception;
+    Student updateStudent(Student updatedData) throws Exception;
 
-    Students deleteStudent(Long id) throws Exception;
+    Student deleteStudent(Long id) throws Exception;
 
-    Double calculateGpa(Students student);
+    Double calculateGpa(Student student);
 
-    void addCompletedCourses(Students student);
+    void addCompletedCourses(Student student);
 
 
 

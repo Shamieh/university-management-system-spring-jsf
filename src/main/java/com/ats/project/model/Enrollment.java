@@ -1,13 +1,9 @@
 package com.ats.project.model;
 
-import com.ats.project.model.Courses;
-import com.ats.project.model.Students;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "enrollment")
@@ -25,13 +21,13 @@ public class Enrollment {
     @ManyToOne
     @MapsId("studentId")
     @JoinColumn(name = "student_id")
-    private Students student;
+    private Student student;
 
 
     @ManyToOne
     @MapsId("courseId")
     @JoinColumn(name = "course_id")
-    private Courses course;
+    private Course course;
 
 //    @Enumerated(EnumType.STRING)
 //    @MapsId("semester")
@@ -44,7 +40,7 @@ public class Enrollment {
 
     LocalDate enrollmentDate;
 
-    public Enrollment(Students student, Courses course, boolean isActive, Grade grade,
+    public Enrollment(Student student, Course course, boolean isActive, Grade grade,
                       Semester semester, EnrollmentStatus status) {
 
         if (student == null) {

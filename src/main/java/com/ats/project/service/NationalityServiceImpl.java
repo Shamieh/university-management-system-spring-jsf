@@ -1,6 +1,5 @@
 package com.ats.project.service;
 
-import com.ats.project.model.Students;
 import com.ats.project.repository.NationalityRepository;
 import com.ats.project.model.Nationality;
 import org.springframework.beans.factory.annotation.Autowired;

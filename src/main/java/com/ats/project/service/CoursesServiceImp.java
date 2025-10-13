@@ -1,8 +1,7 @@
 package com.ats.project.service;
 
-import com.ats.project.model.Students;
 import com.ats.project.repository.CoursesRepository;
-import com.ats.project.model.Courses;
+import com.ats.project.model.Course;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,19 +24,19 @@ public class CoursesServiceImp implements CoursesService {
 
     @Override
     @Transactional
-    public Courses CreateCourses(Courses courses) {
-        Optional<Courses> existingCourse = coursesRepository.findByName(courses.getName());
+    public Course CreateCourses(Course courses) {
+        Optional<Course> existingCourse = coursesRepository.findByName(courses.getName());
         if (existingCourse.isPresent()) {
             return existingCourse.get();
         }
 
         // If the course has prerequisites, ensure they're managed entities
         if (courses.getPrerequisiteCourses() != null && !courses.getPrerequisiteCourses().isEmpty()) {
-            List<Courses> managedPrerequisites = new ArrayList<>();
-            for (Courses prereq : courses.getPrerequisiteCourses()) {
+            List<Course> managedPrerequisites = new ArrayList<>();
+            for (Course prereq : courses.getPrerequisiteCourses()) {
                 if (prereq.getId() != null) {
                     // Fetch the managed entity from database
-                    Courses managedPrereq = coursesRepository.findById(prereq.getId())
+                    Course managedPrereq = coursesRepository.findById(prereq.getId())
                             .orElseThrow(() -> new RuntimeException("Prerequisite course not found: " + prereq.getId()));
                     managedPrerequisites.add(managedPrereq);
                 } else {
@@ -51,19 +50,19 @@ public class CoursesServiceImp implements CoursesService {
         return coursesRepository.save(courses);
     }
     @Override
-    public List<Courses> findAll() {
+    public List<Course> findAll() {
         return coursesRepository.findAll();
     }
 
     @Override
-    public Optional<Courses> findById(Long courseId) {
+    public Optional<Course> findById(Long courseId) {
         return coursesRepository.findById(courseId);
     }
 
     @Transactional
     @Override
-    public void updateCourses(Courses updatedCourses) {
-        Courses oldCourse = coursesRepository.findById(updatedCourses.getId()).get();
+    public void updateCourses(Course updatedCourses) {
+        Course oldCourse = coursesRepository.findById(updatedCourses.getId()).get();
         oldCourse.setName(updatedCourses.getName());
         oldCourse.setMaxCapacity(updatedCourses.getMaxCapacity());
         oldCourse.setCurrentEnrollment(updatedCourses.getCurrentEnrollment());
