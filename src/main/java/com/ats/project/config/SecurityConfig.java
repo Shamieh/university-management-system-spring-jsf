@@ -27,7 +27,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(
                 authorizeRequests -> {
 
-                        authorizeRequests.requestMatchers("/login.xhtml", "/about.xhtml", "/javax.faces.resource/**").permitAll();
+                        authorizeRequests.requestMatchers("/login.xhtml", "/about.xhtml", "/javax.faces.resources/**").permitAll();
                         authorizeRequests.requestMatchers("/admin/**").hasRole("ADMIN");
                         authorizeRequests.requestMatchers("/student/**").hasRole("STUDENT");
                         authorizeRequests.anyRequest().authenticated();

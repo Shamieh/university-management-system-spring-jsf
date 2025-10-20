@@ -13,94 +13,95 @@
 <h:body>
     <ui:include src="/template/header.xhtml"/>
 
-
     <br/>
 
     <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true"/>
 
+    <div>
 
-<div>
 
-    <p:commandButton
-            value="➕ Add Enrollment"
-            actionListener="#{enrollmentBean.resetForm()}"
-            update=":enrollmentForm"
-            oncomplete="PF('enrollmentDialog').show();"
-            styleClass="ui-button-success"
-    />
-    <br/>
-    <br/>
-    <h:form id="exportForm">
         <p:commandButton
-                value="Export to Excel"
-                icon="pi pi-file-excel"
-                action="#{enrollmentBean.exportToExcel}"
-                ajax="false"
-                styleClass="ui-button-success" />
-    </h:form>
+                value="➕ Add Enrollment"
+                actionListener="#{enrollmentBean.resetForm()}"
+                update=":enrollmentForm"
+                oncomplete="PF('enrollmentDialog').show();"
+                styleClass="ui-button-success"
+        />
+        <br/><br/>
+
+        <h:form id="exportForm">
+            <p:commandButton
+                    value="Export to Excel"
+                    icon="pi pi-file-excel"
+                    action="#{enrollmentBean.exportToExcel}"
+                    ajax="false"
+                    styleClass="ui-button-success" />
+        </h:form>
+
+        <h:form id="sortForm"
+                style="text-align: right">
+            <p:selectOneMenu value="#{enrollmentBean.sortField}"
+                             style="margin-right: 5px;">
+                <f:selectItem itemLabel="Select Field" itemValue="" />
+                <f:selectItem itemLabel="Student Name" itemValue="student.name" />
+                <f:selectItem itemLabel="Course Name" itemValue="course.name" />
+                <f:selectItem itemLabel="Student ID" itemValue="student.id" />
+                <f:selectItem itemLabel="Course ID" itemValue="course.id" />
+
+            </p:selectOneMenu>
+
+            <p:selectOneMenu value="#{enrollmentBean.sortOrder}"
+                             style="margin-right: 5px;">
+                <f:selectItem itemLabel="Ascending" itemValue="asc" />
+                <f:selectItem itemLabel="Descending" itemValue="desc" />
+            </p:selectOneMenu>
+
+            <p:commandButton value="Sort" actionListener="#{enrollmentBean.sortEnrollments}"
+                             update=":mainForm:enrollmentTable"
+                             style="margin-right: 5px;"/>
+        </h:form>
 
 
-    <h:form id="sortForm"
-    style="text-align: right">
-        <p:selectOneMenu value="#{enrollmentBean.sortField}"
-                         style="margin-right: 5px;">
-            <f:selectItem itemLabel="Select Field" itemValue="" />
-            <f:selectItem itemLabel="Student Name" itemValue="student.name" />
-            <f:selectItem itemLabel="Course Name" itemValue="course.name" />
-            <f:selectItem itemLabel="Student ID" itemValue="student.id" />
-            <f:selectItem itemLabel="Course ID" itemValue="course.id" />
+    </div>
 
-        </p:selectOneMenu>
-
-        <p:selectOneMenu value="#{enrollmentBean.sortOrder}"
-                         style="margin-right: 5px;">
-            <f:selectItem itemLabel="Ascending" itemValue="asc" />
-            <f:selectItem itemLabel="Descending" itemValue="desc" />
-        </p:selectOneMenu>
-
-        <p:commandButton value="Sort" actionListener="#{enrollmentBean.sortEnrollments}"
-                         update=":mainForm:enrollmentTable"
-                         style="margin-right: 5px;"/>
-    </h:form>
-
-    <h:form id="globalFilterForm">
-        <p:outputLabel for="globalFilter" value="Search 🔎: "/>
-        <p:inputText id="globalFilter" placeholder="Search for course or stundet names and ID's"
-                        value="#{enrollmentBean.globalFilter}"
-        style="width: 400px">
-        </p:inputText>
-    </h:form>
-</div>
-
-    <br/>
-    <br/>
+    <br/><br/>
 
     <h:form id="mainForm">
 
-        <!-- AFTER -->
-        <p:dataTable id="enrollmentTable" value="#{enrollmentBean.enrollments}"
-                     var="enrollment" rows="5" responsiveLayout="scroll"
-                     styleClass="courses-table custom-datatable" rowHover="true"
+        <p:dataTable id="enrollmentTable"
+                     value="#{enrollmentBean.lazyEnrollments}"
+                     var="enrollment"
                      paginator="true"
-                     paginatorPosition="bottom"
-                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                     rowsPerPageTemplate="5,10,15,20,50"
-                     currentPageReportTemplate="Showing {startRecord} - {endRecord} of {totalRecords} entries"
-                     globalFilterFunction="#{enrollmentBean.globalFilterFunction}">
+                     rows="5"
+                     lazy="true"
+                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                     rowsPerPageTemplate="5,10,20,50"
+                     styleClass="custom-datatable"
+                     rowHover="true"
+                     responsiveLayout="scroll">
 
             <p:column headerText="Student ID">
                 <h:outputText value="#{enrollment.id.studentId}" />
             </p:column>
-            <p:column headerText="Course ID">
+
+            <p:column headerText="Course ID"
+                      >
                 <h:outputText value="#{enrollment.id.courseId}" />
             </p:column>
-            <p:column headerText="Semester">
+
+            <p:column headerText="Semester"
+                      >
                 <h:outputText value="#{enrollment.id.semester}" />
             </p:column>
+
             <p:column headerText="Course Name">
+<!--                      filterBy="#{enrollment.course.name}"-->
+<!--                      filterMatchMode="contains">-->
                 <h:outputText value="#{enrollment.course.name}" />
             </p:column>
-            <p:column headerText="Student Name">
+
+            <p:column headerText="Student Name"
+                      >
                 <h:outputText value="#{enrollment.student.name}" />
             </p:column>
 
@@ -114,8 +115,7 @@
             <p:column headerText="Active"
                       filterBy="#{enrollment.active}"
                       filterMatchMode="equals"
-                      filterOptions="#{enrollmentBean.activeSelections}"
-                        filterValue="#{enrollmentBean.activeFilter}">
+                      filterOptions="#{enrollmentBean.activeSelections}">
                 <h:outputText value="#{enrollment.active}" />
             </p:column>
 
@@ -133,16 +133,14 @@
                                  update=":enrollmentForm"
                                  oncomplete="PF('enrollmentDialog').show();"
                                  styleClass="ui-button-warning"
-                                 style="margin-right: 5px;"
-                />
-
+                                 style="margin-right: 5px;"/>
                 <p:commandButton icon="pi pi-trash" title="Delete"
                                  actionListener="#{enrollmentBean.deleteEnrollment(enrollment)}"
                                  update=":mainForm:enrollmentTable, :messages"
                                  onclick="return confirm('Are you sure you want to delete this enrollment?');"
-                                 styleClass="ui-button-danger"
-                />
+                                 styleClass="ui-button-danger"/>
             </p:column>
+
         </p:dataTable>
     </h:form>
 
@@ -157,9 +155,12 @@
                     <p:inputText id="studentId" value="#{enrollmentBean.studentId}"
                                  required="true" requiredMessage="Student ID is required"/>
 
-                    <p:outputLabel for="courseId" value="Course ID *"/>
-                    <p:inputText id="courseId" value="#{enrollmentBean.courseId}"
-                                 required="true" requiredMessage="Course ID is required"/>
+                    <p:outputLabel for="course" value="Course *"/>
+                    <p:selectOneMenu id="course" value="#{enrollmentBean.courseId}">
+                        <f:selectItem itemLabel="-- Choose Course --" itemValue="#{null}" />
+                        <f:selectItems value="#{coursesBean.coursesList}" var="c"
+                                       itemLabel="#{c.name} (#{c.creditHours} CH)" itemValue="#{c.id}"/>
+                    </p:selectOneMenu>
 
                     <h:outputLabel for="semester" value="Semester *" />
                     <p:selectOneMenu id="semester" value="#{enrollmentBean.selectedSemester}"
@@ -210,11 +211,7 @@
         </div>
     </p:dialog>
 
-
-    <br/>
-    <br/>
-    <br/>
-
+    <br/><br/><br/>
     <ui:include src="/template/footer.xhtml"/>
 
 </h:body>

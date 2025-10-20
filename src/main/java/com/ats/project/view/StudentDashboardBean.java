@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -98,6 +99,7 @@ public class StudentDashboardBean implements Serializable {
             enrollment.setCourse(coursesRepository.findById(selectedCourseId).orElseThrow());
             enrollment.setStatus(EnrollmentStatus.ENROLLED);
             enrollment.setActive(true);
+            enrollment.setEnrollmentDate(LocalDate.now());
 
             enrollmentService.addEnrollment(enrollment);
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Enrolled successfully."));

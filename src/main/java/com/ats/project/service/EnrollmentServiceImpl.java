@@ -6,10 +6,14 @@ import com.ats.project.model.*;
 import com.ats.project.repository.CoursesRepository;
 import com.ats.project.repository.EnrollmentRepo;
 import com.ats.project.repository.StudentsRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +34,73 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Override
     public List<Enrollment> findAll() {
         return enrollmentRepo.findAll();
+    }
+
+    @Override
+    public long count() {
+        return enrollmentRepo.count();
+    }
+
+    public Page<Enrollment> getEnrollments(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("student_id").ascending());
+        return enrollmentRepo.findAll(pageable);
+    }
+
+
+
+    public Page<Enrollment> getEnrollments(int page, int size, String sortField, Sort.Direction direction, Map<String, Object> filters) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField != null ? sortField : "id"));
+
+        EnrollmentStatus statusEnum = null;
+        String statusFilter = (String) filters.get("status");
+
+        if (statusFilter != null && !statusFilter.isEmpty()) {
+            try {
+                statusEnum = EnrollmentStatus.valueOf(statusFilter);
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid status filter value: " + statusFilter);
+            }
+        }
+
+
+        Boolean active = filters.containsKey("active") ? parseBoolean(filters.get("active")) : null;
+
+        return enrollmentRepo.findAllWithFilters(statusEnum, active, pageable);
+    }
+
+    private Boolean parseBoolean(Object val) {
+        if (val == null) return null;
+        if (val instanceof Boolean) return (Boolean) val;
+        return Boolean.parseBoolean(val.toString());
+    }
+
+//
+//    public Page<Enrollment> getEnrollments(int page, int size, String sortField,
+//                                           Sort.Direction direction, Map<String, Object> filters) {
+//
+//        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField != null ? sortField : "id"));
+//
+//        // Basic filter handling (can be extended)
+//        String globalSearch = (String) filters.get("global");
+//        if (globalSearch != null && !globalSearch.trim().isEmpty()) {
+//            return enrollmentRepo.findByGlobalSearch(globalSearch.toLowerCase(), pageable);
+//        }
+//
+//        return enrollmentRepo.findAll(pageable);
+//    }
+
+    // Used for Excel export (all filtered data)
+    public List<Enrollment> getAllFilteredEnrollments(Map<String, Object> filters, String sortField,
+                                                      Sort.Direction direction) {
+
+        Sort sort = Sort.by(direction, sortField != null ? sortField : "id");
+        String globalSearch = (String) filters.get("global");
+
+        if (globalSearch != null && !globalSearch.trim().isEmpty()) {
+            return enrollmentRepo.findByGlobalSearch(globalSearch.toLowerCase(), sort);
+        }
+
+        return enrollmentRepo.findAll(sort);
     }
 
     @Override

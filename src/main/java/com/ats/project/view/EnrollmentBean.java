@@ -19,15 +19,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.primefaces.model.FilterMeta;
+import org.primefaces.model.LazyDataModel;
+import org.primefaces.model.SortMeta;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Named("enrollmentBean")
@@ -44,11 +46,16 @@ public class EnrollmentBean implements Serializable {
     private List <SelectItem> statusSelections;
     private List <SelectItem> activeSelections;
     private Enrollment selectedEnrollment;
+    private int page = 0;
+    private int pageSize = 5;
+    private long totalRecords;
 
     private Long studentId;
     private Long courseId;
     private Semester selectedSemester;
-    private String activeFilter;
+    private Boolean activeFilter;
+    private LazyDataModel<Enrollment> lazyEnrollments;
+
 
     @Autowired
     private StudentsService studentsService;
@@ -77,21 +84,80 @@ public class EnrollmentBean implements Serializable {
             grades = List.of(Grade.values());
             enrollmentStatuses = List.of(EnrollmentStatus.values());
 
+//            statusSelections = enrollmentStatuses.stream()
+//                    .map(s -> new SelectItem(s.name(), s.name()))
+//                    .collect(Collectors.toList());
+//            statusSelections.add(new SelectItem("", "All Statuses"));
             statusSelections = enrollmentStatuses.stream()
-                    .map(s -> new SelectItem(s, s.name()))
+                    .map(s -> new SelectItem(s.name(), s.name())) // value = string name
                     .collect(Collectors.toList());
-            statusSelections.add(new SelectItem("", "All Statuses"));
+            statusSelections.add(0, new SelectItem("", "All Statuses"));
             activeSelections =  List.of(
                     new SelectItem("", "All"),
                     new SelectItem("true", "Active"),
                     new SelectItem("false", "Inactive")
             );
 
+            loadLazySetup();
         } catch (Exception e) {
             e.printStackTrace();
             addErrorMessage("Error initializing enrollment bean: " + e.getMessage());
         }
     }
+
+    private String sortField, sortOrder = "asc";
+    private String globalFilter;
+
+
+    private void loadLazySetup(){
+        lazyEnrollments = new  LazyDataModel<Enrollment>() {
+
+            @Override
+            public int count(Map<String, FilterMeta> filterBy) {
+                return (int)    enrollmentService.count();
+            }
+
+            @Override
+            public List<Enrollment> load(int first, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
+                int pageNumber = first / pageSize;
+
+
+                String sortFieldToUse = (sortField != null && !sortField.isEmpty() && !sortField.equals(""))
+                        ? sortField: "student.id";
+                Sort.Direction direction = "desc".equalsIgnoreCase(sortOrder) ?Sort.Direction.DESC : Sort.Direction.ASC;
+
+                Map<String, Object> filters = filterBy.entrySet().stream()
+                        .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getFilterValue()));
+
+                System.out.println("=====Filters=====");
+                filters.forEach((k,v) -> System.out.println(k + " -> " + v));
+
+                var pageResult = enrollmentService.getEnrollments(pageNumber, pageSize, sortField, direction, filters);
+                setRowCount((int) pageResult.getTotalElements());
+                return pageResult.getContent();
+
+            }
+
+        };
+    }
+
+
+
+    public void sortEnrollments() {
+        if (sortField == null  || sortOrder == null) {
+            return;
+        }
+        try{
+            loadLazySetup();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Sort Applied"));
+        }catch(Exception e){
+            e.printStackTrace();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Error sorting enrollments: " + e.getMessage()));
+        }
+
+
+    }
+
 
     public void resetForm() {
         selectedEnrollment = new Enrollment();
@@ -105,7 +171,9 @@ public class EnrollmentBean implements Serializable {
     }
 
     public void refreshEnrollments() {
-        enrollments = enrollmentService.findAll();
+        var pageResult = enrollmentService.getEnrollments(page, pageSize);
+        enrollments = pageResult.getContent();
+        totalRecords = pageResult.getTotalElements();
     }
 
     public void setRelations() {
@@ -222,137 +290,55 @@ public class EnrollmentBean implements Serializable {
                 new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", message));
     }
 
-    private String sortField, sortOrder;
 
-    public void sortEnrollments() {
-        if (sortField == null  || sortOrder == null) {
-            return;
-        }
-
-        Comparator <Enrollment> comparator = null;
-
-        switch (sortField.toLowerCase()) {
-                case "student.name":
-                    comparator = Comparator.comparing(e -> e.getStudent().getName());
-                    break;
-
-                case "course.name":
-                    comparator = Comparator.comparing(e -> e.getCourse().getName());
-                    break;
-
-                case "student.id":
-                    comparator = Comparator.comparing(e -> e.getStudent().getId());
-                    break;
-
-                case "course.id":
-                    comparator = Comparator.comparing(e -> e.getCourse().getId());
-                    break;
-        }
-        
-        if (("desc").equals(sortOrder)) {
-            comparator = comparator.reversed();
-        }
-
-        enrollments.sort(comparator);
-    }
-
-
-    private String globalFilter;
-    public boolean globalFilterFunction(Object value, Object filter, Locale locale) {
-        if (filter == null) { return true;}
-
-        String filterString = filter.toString().toLowerCase();
-        Enrollment enrollment = (Enrollment) value;
-
-        return (enrollment.getStudent().getName() != null && enrollment.getStudent().getName().toLowerCase().contains(filterString)
-                || enrollment.getCourse().getName() != null && enrollment.getCourse().getName().toLowerCase().contains(filterString)
-                || enrollment.getStudent().getId() != null && enrollment.getStudent().getId().toString().equals(filterString)
-                || enrollment.getCourse().getId() != null && enrollment.getCourse().getId().toString().equals(filterString));
-
-    }
-
-    // EDITED: Fixed Excel export method
     public void exportToExcel() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ExternalContext externalContext = facesContext.getExternalContext();
-        System.out.println("=== EXPORT BUTTON CLICKED ===");
-        System.out.println("Enrollment list size: " + (enrollments != null ? enrollments.size() : "NULL"));
-        try {
-            // Create workbook and sheet
-            Workbook workbook = new XSSFWorkbook();
+
+        try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Enrollments");
 
-            // Create header row style
-            CellStyle headerStyle = workbook.createCellStyle();
-            Font headerFont = workbook.createFont();
-            headerFont.setBold(true);
-            headerStyle.setFont(headerFont);
-            headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-
-            // Create header row
-            Row headerRow = sheet.createRow(0);
-            String[] columns = {"Student ID", "Student Name", "Course ID", "Course Name",
-                    "Semester", "Status", "Grade", "Enrollment Date"};
-
-            for (int i = 0; i < columns.length; i++) {
-                Cell cell = headerRow.createCell(i);
-                cell.setCellValue(columns[i]);
-                cell.setCellStyle(headerStyle);
+            // Header
+            Row header = sheet.createRow(0);
+            String[] headers = {"Student ID", "Student Name", "Course ID", "Course Name", "Semester", "Status", "Grade", "Active", "Enrollment Date"};
+            for (int i = 0; i < headers.length; i++) {
+                header.createCell(i).setCellValue(headers[i]);
             }
 
-            // Fill data rows
-            int rowNum = 1;
-            for (Enrollment enrollment : enrollments) {
-                Row row = sheet.createRow(rowNum++);
+            // FIXED: Pass empty filters map instead of undefined variable
+            Map<String, Object> emptyFilters = new HashMap<>();
+            List<Enrollment> enrollments = enrollmentService.getAllFilteredEnrollments(emptyFilters, "id", Sort.Direction.ASC);
 
-                row.createCell(0).setCellValue(enrollment.getStudent().getId());
-                row.createCell(1).setCellValue(enrollment.getStudent().getName());
-                row.createCell(2).setCellValue(enrollment.getCourse().getId());
-                row.createCell(3).setCellValue(enrollment.getCourse().getName());
-                row.createCell(4).setCellValue(enrollment.getId().getSemester().name());
-                row.createCell(5).setCellValue(enrollment.getStatus().name());
-                row.createCell(6).setCellValue(enrollment.getGrade() != null ?
-                        enrollment.getGrade().name() : "N/A");
-                row.createCell(7).setCellValue(enrollment.getEnrollmentDate().toString());
+            int rowIdx = 1;
+            for (Enrollment e : enrollments) {
+                Row row = sheet.createRow(rowIdx++);
+                row.createCell(0).setCellValue(e.getStudent().getId());
+                row.createCell(1).setCellValue(e.getStudent().getName());
+                row.createCell(2).setCellValue(e.getCourse().getId());
+                row.createCell(3).setCellValue(e.getCourse().getName());
+                row.createCell(4).setCellValue(e.getId().getSemester().toString());
+                row.createCell(5).setCellValue(e.getStatus().toString());
+                row.createCell(6).setCellValue(e.getGrade() != null ? e.getGrade().toString() : "N/A");
+                row.createCell(7).setCellValue(e.isActive() ? "Yes" : "No");
+                row.createCell(8).setCellValue(e.getEnrollmentDate().toString());
             }
 
             // Auto-size columns
-            for (int i = 0; i < columns.length; i++) {
-                sheet.autoSizeColumn(i);
-            }
+            for (int i = 0; i < headers.length; i++) sheet.autoSizeColumn(i);
 
-            // Prepare response
-            externalContext.responseReset();
+            // Response
             externalContext.setResponseContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            externalContext.setResponseHeader("Content-Disposition",
-                    "attachment; filename=\"enrollments_" + LocalDate.now() + ".xlsx\"");
-
-            // Write to output stream
-            OutputStream output = externalContext.getResponseOutputStream();
-            workbook.write(output);
-            output.flush();
-            workbook.close();
-
-            // Mark response as complete
+            externalContext.setResponseHeader("Content-Disposition", "attachment; filename=\"enrollments.xlsx\"");
+            workbook.write(externalContext.getResponseOutputStream());
             facesContext.responseComplete();
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            facesContext.addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            "Error", "Failed to export Excel: " + e.getMessage()));
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Export Error", e.getMessage()));
         }
     }
-
-    // EDITED: Add this test method temporarily
-    public void testExport() {
-        System.out.println("=== EXPORT BUTTON CLICKED ===");
-        System.out.println("Enrollment list size: " + (enrollments != null ? enrollments.size() : "NULL"));
-
-        FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_INFO,
-                        "Test", "Export button was clicked!"));
-    }
-
 }
+
+
+/**/
